@@ -40,18 +40,28 @@ class NewsTableViewController: UITableViewController {
     }
     
     private func populateNew(){
-        let url = URL(string: "https://newsapi.org/v2/top-headlines?country=us&apiKey=ca56b26a31d44e8c8d1b580784666ed9")
+//        let url = URL(string: "https://newsapi.org/v2/everything?q=tesla&from=2021-01-02&sortBy=publishedAt&apiKey=ca56b26a31d44e8c8d1b580784666ed9")!
         
-        Observable.just(url).flatMap{ url -> Observable<Data> in
-            let request = URLRequest(url: url!)
-            return URLSession.shared.rx.data(request: request)
-        }.map { data -> [Article]? in
-            return try! JSONDecoder().decode(ArticleList.self, from: data).articles
-        }.subscribe(onNext:{ [weak self] articles in
-            if let articles = articles {
-                self?.articles = articles
+//        Observable.just(url).flatMap{ url -> Observable<Data> in
+//            let request = URLRequest(url: url!)
+//            return URLSession.shared.rx.data(request: request)
+//        }.map { data -> [Article]? in
+//            return try? JSONDecoder().decode(ArticleList.self, from: data).articles
+//        }.subscribe(onNext:{ [weak self] articles in
+//            if let articles = articles {
+//                self?.articles = articles
+//                DispatchQueue.main.async {
+//                    self!.tableView.reloadData()
+//                }
+//            }
+//        }).disposed(by: disposebag)
+        
+        
+        URLRequest.load(recourse: ArticleList.all).subscribe(onNext: { [weak self] result in
+            if let result = result {
+                self?.articles = result.articles
                 DispatchQueue.main.async {
-                    self!.tableView.reloadData()
+                    self?.tableView.reloadData()
                 }
             }
         }).disposed(by: disposebag)
